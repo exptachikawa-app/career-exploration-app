@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>キャリア探索ツール | EXP立川</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <!-- ホーム画面 -->
+    <div id="screen-home" class="screen active">
+        <div class="container">
+            <header class="app-header">
+                <img src="images/logo.png" alt="EXP立川ロゴ" class="logo">
+                <h1><ruby>就労選択支援事業所<rt>しゅうろうせんたくしえんじぎょうしょ</rt></ruby>EXP<ruby>立川<rt>たちかわ</rt></ruby></h1>
+            </header>
+
+            <main class="welcome-content">
+                <h2 class="app-title">キャリア<ruby>探索<rt>たんさく</rt></ruby>ツール</h2>
+                <p class="app-subtitle">あなたの<ruby>興味<rt>きょうみ</rt></ruby>や<ruby>関心<rt>かんしん</rt></ruby>から、<ruby>向<rt>む</rt></ruby>いている<ruby>仕事<rt>しごと</rt></ruby>を<ruby>見<rt>み</rt></ruby>つけよう</p>
+
+                <div class="info-box">
+                    <h3>このツールについて</h3>
+                    <ul class="info-list">
+                        <li><ruby>簡単<rt>かんたん</rt></ruby>な<ruby>質問<rt>しつもん</rt></ruby>に<ruby>答<rt>こた</rt></ruby>えるだけで、あなたに<ruby>合<rt>あ</rt></ruby>った<ruby>仕事<rt>しごと</rt></ruby>が<ruby>見<rt>み</rt></ruby>つかります</li>
+                        <li><ruby>時間<rt>じかん</rt></ruby>は<ruby>約<rt>やく</rt></ruby>10<ruby>分<rt>ふん</rt></ruby>です</li>
+                        <li><ruby>結果<rt>けっか</rt></ruby>はPDFで<ruby>保存<rt>ほぞん</rt></ruby>できます</li>
+                        <li><ruby>一人<rt>ひとり</rt></ruby>でも、<ruby>支援者<rt>しえんしゃ</rt></ruby>と<ruby>一緒<rt>いっしょ</rt></ruby>でも<ruby>使<rt>つか</rt></ruby>えます</li>
+                    </ul>
+                </div>
+
+                <div class="note-box">
+                    <p>※ この<ruby>結果<rt>けっか</rt></ruby>は、あなたの<ruby>興味<rt>きょうみ</rt></ruby>や<ruby>関心<rt>かんしん</rt></ruby>を<ruby>知<rt>し</rt></ruby>るための<ruby>参考<rt>さんこう</rt></ruby>です。<ruby>専門的<rt>せんもんてき</rt></ruby>な<ruby>検査<rt>けんさ</rt></ruby>ではありません。</p>
+                </div>
+
+                <button class="btn btn-primary btn-large" onclick="startApp()">
+                    はじめる
+                </button>
+            </main>
+        </div>
+    </div>
+
+    <!-- 障害者雇用確認画面 -->
+    <div id="screen-employment-check" class="screen">
+        <div class="container">
+            <header class="app-header-small">
+                <img src="images/logo.png" alt="EXP立川ロゴ" class="logo-small">
+            </header>
+
+            <main class="question-content">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 5%"></div>
+                </div>
+
+                <h2 class="question-title"><ruby>確認<rt>かくにん</rt></ruby></h2>
+                
+                <div class="question-box">
+                    <p class="question-text">あなたは<ruby>障害者雇用<rt>しょうがいしゃこよう</rt></ruby>を<ruby>検討<rt>けんとう</rt></ruby>していますか？</p>
+                    <p class="question-help"><ruby>障害者雇用<rt>しょうがいしゃこよう</rt></ruby>：<ruby>障害<rt>しょうがい</rt></ruby>のある<ruby>方<rt>かた</rt></ruby>のための<ruby>働<rt>はたら</rt></ruby>き<ruby>方<rt>かた</rt></ruby>です</p>
+                </div>
+
+                <div class="button-group-vertical">
+                    <button class="btn btn-choice" onclick="setEmploymentStatus(true)">
+                        <span class="choice-icon">✓</span>
+                        <span>はい</span>
+                    </button>
+                    <button class="btn btn-choice" onclick="setEmploymentStatus(false)">
+                        <span class="choice-icon">✓</span>
+                        <span>いいえ</span>
+                    </button>
+                    <button class="btn btn-choice" onclick="setEmploymentStatus(null)">
+                        <span class="choice-icon">?</span>
+                        <span>わからない</span>
+                    </button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 第1段階質問画面（テンプレート） -->
+    <div id="screen-questions-phase1" class="screen">
+        <div class="container">
+            <header class="app-header-small">
+                <img src="images/logo.png" alt="EXP立川ロゴ" class="logo-small">
+            </header>
+
+            <main class="question-content">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-phase1"></div>
+                </div>
+
+                <h2 class="question-title"><ruby>質問<rt>しつもん</rt></ruby> <span id="question-number-phase1"></span></h2>
+                
+                <div class="question-box" id="question-box-phase1">
+                    <!-- 動的に質問が表示される -->
+                </div>
+
+                <div class="button-group-vertical">
+                    <button class="btn btn-choice" onclick="answerPhase1('yes')">
+                        <span class="choice-icon">😊</span>
+                        <span>はい</span>
+                    </button>
+                    <button class="btn btn-choice" onclick="answerPhase1('no')">
+                        <span class="choice-icon">😐</span>
+                        <span>いいえ</span>
+                    </button>
+                    <button class="btn btn-choice btn-unsure" onclick="answerPhase1('unsure')">
+                        <span class="choice-icon">🤔</span>
+                        <span>わからない</span>
+                    </button>
+                </div>
+
+                <button class="btn btn-text" onclick="goBack()">← <ruby>戻<rt>もど</rt></ruby>る</button>
+            </main>
+        </div>
+    </div>
+
+    <!-- 第2段階質問画面（テンプレート） -->
+    <div id="screen-questions-phase2" class="screen">
+        <div class="container">
+            <header class="app-header-small">
+                <img src="images/logo.png" alt="EXP立川ロゴ" class="logo-small">
+            </header>
+
+            <main class="question-content">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-phase2"></div>
+                </div>
+
+                <h2 class="question-title">もう<ruby>少<rt>すこ</rt></ruby>し<ruby>詳<rt>くわ</rt></ruby>しく<ruby>聞<rt>き</rt></ruby>かせてください</h2>
+                
+                <div class="question-box" id="question-box-phase2">
+                    <!-- 動的に質問が表示される -->
+                </div>
+
+                <div class="button-group-vertical">
+                    <button class="btn btn-choice" onclick="answerPhase2('yes')">
+                        <span class="choice-icon">😊</span>
+                        <span>はい、<ruby>好<rt>す</rt></ruby>きです</span>
+                    </button>
+                    <button class="btn btn-choice" onclick="answerPhase2('no')">
+                        <span class="choice-icon">😐</span>
+                        <span>いいえ、<ruby>好<rt>す</rt></ruby>きではありません</span>
+                    </button>
+                </div>
+
+                <button class="btn btn-text" onclick="goBack()">← <ruby>戻<rt>もど</rt></ruby>る</button>
+            </main>
+        </div>
+    </div>
+
+    <!-- 結果画面 -->
+    <div id="screen-results" class="screen">
+        <div class="container" id="results-content">
+            <header class="app-header-small">
+                <img src="images/logo.png" alt="EXP立川ロゴ" class="logo-small">
+            </header>
+
+            <main class="results-content">
+                <h2 class="results-title">あなたの<ruby>興味<rt>きょうみ</rt></ruby>・<ruby>関心<rt>かんしん</rt></ruby>マップ</h2>
+
+                <div class="chart-container">
+                    <canvas id="radarChart"></canvas>
+                </div>
+
+                <div class="top-interests" id="top-interests">
+                    <!-- 動的に表示される -->
+                </div>
+
+                <div class="career-recommendations" id="career-recommendations">
+                    <!-- 動的に表示される -->
+                </div>
+
+                <div class="next-steps">
+                    <h3><ruby>次<rt>つぎ</rt></ruby>のステップ</h3>
+                    <ul class="steps-list">
+                        <li><ruby>気<rt>き</rt></ruby>になる<ruby>仕事<rt>しごと</rt></ruby>について、もっと<ruby>調<rt>しら</rt></ruby>べてみましょう</li>
+                        <li><ruby>実際<rt>じっさい</rt></ruby>にその<ruby>仕事<rt>しごと</rt></ruby>をしている<ruby>人<rt>ひと</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>を<ruby>聞<rt>き</rt></ruby>いてみましょう</li>
+                        <li><ruby>職場見学<rt>しょくばけんがく</rt></ruby>や<ruby>体験<rt>たいけん</rt></ruby>ができる<ruby>機会<rt>きかい</rt></ruby>を<ruby>探<rt>さが</rt></ruby>してみましょう</li>
+                        <li><ruby>支援者<rt>しえんしゃ</rt></ruby>と<ruby>一緒<rt>いっしょ</rt></ruby>にこの<ruby>結果<rt>けっか</rt></ruby>について<ruby>話<rt>はな</rt></ruby>し<ruby>合<rt>あ</rt></ruby>いましょう</li>
+                    </ul>
+                </div>
+
+                <div class="note-box">
+                    <p>※ この<ruby>結果<rt>けっか</rt></ruby>は、あなたの<ruby>今<rt>いま</rt></ruby>の<ruby>興味<rt>きょうみ</rt></ruby>・<ruby>関心<rt>かんしん</rt></ruby>を<ruby>示<rt>しめ</rt></ruby>すものです。<ruby>仕事<rt>しごと</rt></ruby>を<ruby>決<rt>き</rt></ruby>めつけるものではありません。</p>
+                    <p>※ <ruby>色々<rt>いろいろ</rt></ruby>な<ruby>経験<rt>けいけん</rt></ruby>を<ruby>通<rt>とお</rt></ruby>して、<ruby>興味<rt>きょうみ</rt></ruby>は<ruby>変<rt>か</rt></ruby>わることがあります。</p>
+                </div>
+
+                <!-- 支援者向け情報（PDF出力時のみ表示） -->
+                <div class="supporter-info" id="supporter-info" style="display: none;">
+                    <h3 style="font-size: 20px; color: var(--primary-color); margin-bottom: 15px; font-weight: 600; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px;">
+                        <ruby>支援者<rt>しえんしゃ</rt></ruby>の<ruby>方<rt>かた</rt></ruby>へ
+                    </h3>
+                    <div style="background: #F0F9FF; border-radius: 10px; padding: 20px; margin-bottom: 15px;">
+                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 10px; color: var(--text-primary);">📊 <ruby>回答<rt>かいとう</rt></ruby>の<ruby>詳細<rt>しょうさい</rt></ruby></h4>
+                        <div id="answer-details" style="font-size: 14px; line-height: 1.8;"></div>
+                    </div>
+                    <div style="background: #FFF9E6; border-radius: 10px; padding: 20px;">
+                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 10px; color: var(--text-primary);">💡 <ruby>支援<rt>しえん</rt></ruby>のヒント</h4>
+                        <ul id="support-hints" style="font-size: 14px; line-height: 1.8; padding-left: 20px;"></ul>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="downloadPDF()">
+                        📄 PDFで<ruby>保存<rt>ほぞん</rt></ruby>する
+                    </button>
+                    <button class="btn btn-secondary" onclick="restartApp()">
+                        🔄 もう<ruby>一度<rt>いちど</rt></ruby>やる
+                    </button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
