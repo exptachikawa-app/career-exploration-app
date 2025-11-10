@@ -22,7 +22,7 @@ const appState = {
 const RIASEC_DATA = {
     R: {
         name: 'ものづくり・体を動かす',
-        description: '手や体を使って具体的なものを作ったり、機械を操作したり、体を動かす仕事が向いています。製造業、建設業、農業、清掃業などの分野で活躍できます。',
+        description: '<ruby>手<rt>て</rt></ruby>や<ruby>体<rt>からだ</rt></ruby>を<ruby>使<rt>つか</rt></ruby>って<ruby>具体的<rt>ぐたいてき</rt></ruby>なものを<ruby>作<rt>つく</rt></ruby>ったり、<ruby>機械<rt>きかい</rt></ruby>を<ruby>操作<rt>そうさ</rt></ruby>したり、<ruby>体<rt>からだ</rt></ruby>を<ruby>動<rt>うご</rt></ruby>かす<ruby>仕事<rt>しごと</rt></ruby>が<ruby>向<rt>む</rt></ruby>いています。<ruby>製造業<rt>せいぞうぎょう</rt></ruby>、<ruby>建設業<rt>けんせつぎょう</rt></ruby>、<ruby>農業<rt>のうぎょう</rt></ruby>、<ruby>清掃業<rt>せいそうぎょう</rt></ruby>などの<ruby>分野<rt>ぶんや</rt></ruby>で<ruby>活躍<rt>かつやく</rt></ruby>できます。',
         phase1Questions: [
             '手を使って何かを作ったり、組み立てたりするのは好きですか？',
             '体を動かして働くことに興味がありますか？',
@@ -39,7 +39,7 @@ const RIASEC_DATA = {
     },
     I: {
         name: '調べる・考える',
-        description: '情報を集めて分析したり、問題を論理的に解決したりすることが得意です。IT業界、研究職、データ分析、品質管理などの分野で力を発揮できます。',
+        description: '<ruby>情報<rt>じょうほう</rt></ruby>を<ruby>集<rt>あつ</rt></ruby>めて<ruby>分析<rt>ぶんせき</rt></ruby>したり、<ruby>問題<rt>もんだい</rt></ruby>を<ruby>論理的<rt>ろんりてき</rt></ruby>に<ruby>解決<rt>かいけつ</rt></ruby>したりすることが<ruby>得意<rt>とくい</rt></ruby>です。IT<ruby>業界<rt>ぎょうかい</rt></ruby>、<ruby>研究職<rt>けんきゅうしょく</rt></ruby>、データ<ruby>分析<rt>ぶんせき</rt></ruby>、<ruby>品質管理<rt>ひんしつかんり</rt></ruby>などの<ruby>分野<rt>ぶんや</rt></ruby>で<ruby>力<rt>ちから</rt></ruby>を<ruby>発揮<rt>はっき</rt></ruby>できます。',
         phase1Questions: [
             '新しいことを学ぶのは楽しいですか？',
             '問題の原因を考えて解決するのは好きですか？',
@@ -56,7 +56,7 @@ const RIASEC_DATA = {
     },
     A: {
         name: 'つくる・表現する',
-        description: '自分のアイデアを形にしたり、芸術的な活動をしたりすることが得意です。デザイン業界、クリエイティブ職、Web制作、ハンドメイド作家などの道があります。',
+        description: '<ruby>自分<rt>じぶん</rt></ruby>のアイデアを<ruby>形<rt>かたち</rt></ruby>にしたり、<ruby>芸術的<rt>げいじゅつてき</rt></ruby>な<ruby>活動<rt>かつどう</rt></ruby>をしたりすることが<ruby>得意<rt>とくい</rt></ruby>です。デザイン<ruby>業界<rt>ぎょうかい</rt></ruby>、クリエイティブ<ruby>職<rt>しょく</rt></ruby>、Web<ruby>制作<rt>せいさく</rt></ruby>、ハンドメイド<ruby>作家<rt>さっか</rt></ruby>などの<ruby>道<rt>みち</rt></ruby>があります。',
         phase1Questions: [
             '絵を描いたり、何かをデザインしたりするのは好きですか？',
             '自分のアイデアや感じたことを表現したいですか？',
@@ -73,7 +73,7 @@ const RIASEC_DATA = {
     },
     S: {
         name: '人を助ける・支える',
-        description: '人と関わり、困っている人を助けたり、支えたりすることにやりがいを感じます。福祉・介護、医療、接客・サービス業、教育補助などの分野が向いています。',
+        description: '<ruby>人<rt>ひと</rt></ruby>と<ruby>関<rt>かか</rt></ruby>わり、<ruby>困<rt>こま</rt></ruby>っている<ruby>人<rt>ひと</rt></ruby>を<ruby>助<rt>たす</rt></ruby>けたり、<ruby>支<rt>ささ</rt></ruby>えたりすることにやりがいを<ruby>感<rt>かん</rt></ruby>じます。<ruby>福祉<rt>ふくし</rt></ruby>・<ruby>介護<rt>かいご</rt></ruby>、<ruby>医療<rt>いりょう</rt></ruby>、<ruby>接客<rt>せっきゃく</rt></ruby>・サービス<ruby>業<rt>ぎょう</rt></ruby>、<ruby>教育<rt>きょういく</rt></ruby><ruby>補助<rt>ほじょ</rt></ruby>などの<ruby>分野<rt>ぶんや</rt></ruby>が<ruby>向<rt>む</rt></ruby>いています。',
         phase1Questions: [
             '人と話すのは好きですか？',
             '困っている人を見ると助けたくなりますか？',
@@ -90,7 +90,7 @@ const RIASEC_DATA = {
     },
     E: {
         name: 'リーダー・企画する',
-        description: '人をまとめたり、新しいプロジェクトを企画したりすることが得意です。営業職、イベント企画、店舗マネージャー、プロジェクトリーダーなどで活躍できます。',
+        description: '<ruby>人<rt>ひと</rt></ruby>をまとめたり、<ruby>新<rt>あたら</rt></ruby>しいプロジェクトを<ruby>企画<rt>きかく</rt></ruby>したりすることが<ruby>得意<rt>とくい</rt></ruby>です。<ruby>営業<rt>えいぎょう</rt></ruby><ruby>職<rt>しょく</rt></ruby>、イベント<ruby>企画<rt>きかく</rt></ruby>、<ruby>店舗<rt>てんぽ</rt></ruby>マネージャー、プロジェクトリーダーなどで<ruby>活躍<rt>かつやく</rt></ruby>できます。',
         phase1Questions: [
             'グループで何かをする時、リーダーになることがありますか？',
             '新しいことを始めるのは好きですか？',
@@ -107,7 +107,7 @@ const RIASEC_DATA = {
     },
     C: {
         name: '正確に・きちんと進める',
-        description: '決められたルールや手順に従って、正確に仕事を進めることが得意です。事務職、経理、総務、データ入力、品質チェックなどの仕事が向いています。',
+        description: '<ruby>決<rt>き</rt></ruby>められたルールや<ruby>手順<rt>てじゅん</rt></ruby>に<ruby>従<rt>したが</rt></ruby>って、<ruby>正確<rt>せいかく</rt></ruby>に<ruby>仕事<rt>しごと</rt></ruby>を<ruby>進<rt>すす</rt></ruby>めることが<ruby>得意<rt>とくい</rt></ruby>です。<ruby>事務<rt>じむ</rt></ruby><ruby>職<rt>しょく</rt></ruby>、<ruby>経理<rt>けいり</rt></ruby>、<ruby>総務<rt>そうむ</rt></ruby>、データ<ruby>入力<rt>にゅうりょく</rt></ruby>、<ruby>品質<rt>ひんしつ</rt></ruby>チェックなどの<ruby>仕事<rt>しごと</rt></ruby>が<ruby>向<rt>む</rt></ruby>いています。',
         phase1Questions: [
             'ルールや決まりを守るのは大切だと思いますか？',
             'きちんと整理整頓されていると気持ちがいいですか？',
@@ -692,7 +692,7 @@ function displayTopInterests(top3) {
             <div class="interest-card">
                 <span class="interest-rank">${rank}</span>
                 <h4 class="interest-name">${data.name}</h4>
-                <p class="interest-description">${addRubyToText(data.description)}</p>
+                <p class="interest-description">${data.description}</p>
             </div>
         `;
     });
@@ -754,11 +754,51 @@ function displayCareerRecommendations(top3) {
 // ========================================
 function addRubyToText(text) {
     // よく使われる漢字にルビを追加
+    // 重要：長い単語を先に定義して、部分一致を避ける
     const rubyMap = {
+        // 複合語（長い順）
+        '特別養護老人': '<ruby>特別<rt>とくべつ</rt></ruby><ruby>養護<rt>ようご</rt></ruby><ruby>老人<rt>ろうじん</rt></ruby>',
+        '観葉植物': '<ruby>観葉植物<rt>かんようしょくぶつ</rt></ruby>',
+        '第一印象': '<ruby>第一印象<rt>だいいちいんしょう</rt></ruby>',
+        '自動車': '<ruby>自動車<rt>じどうしゃ</rt></ruby>',
+        '製造業': '<ruby>製造業<rt>せいぞうぎょう</rt></ruby>',
+        '軽作業': '<ruby>軽作業<rt>けいさぎょう</rt></ruby>',
+        '医療機関': '<ruby>医療機関<rt>いりょうきかん</rt></ruby>',
+        '研究所': '<ruby>研究所<rt>けんきゅうじょ</rt></ruby>',
+        '図書館': '<ruby>図書館<rt>としょかん</rt></ruby>',
+        '公民館': '<ruby>公民館<rt>こうみんかん</rt></ruby>',
+        '保育園': '<ruby>保育園<rt>ほいくえん</rt></ruby>',
+        '小売店': '<ruby>小売店<rt>こうりてん</rt></ruby>',
+        '飲食店': '<ruby>飲食店<rt>いんしょくてん</rt></ruby>',
+        '研究室': '<ruby>研究室<rt>けんきゅうしつ</rt></ruby>',
+        '製品開発': '<ruby>製品開発<rt>せいひんかいはつ</rt></ruby>',
+        '掃除機': '<ruby>掃除機<rt>そうじき</rt></ruby>',
+        '測定器': '<ruby>測定器<rt>そくていき</rt></ruby>',
+        '契約書': '<ruby>契約書<rt>けいやくしょ</rt></ruby>',
+        '請求書': '<ruby>請求書<rt>せいきゅうしょ</rt></ruby>',
+        '領収書': '<ruby>領収書<rt>りょうしゅうしょ</rt></ruby>',
+        '保険証': '<ruby>保険証<rt>ほけんしょう</rt></ruby>',
+        '展示会': '<ruby>展示会<rt>てんじかい</rt></ruby>',
+        '達成感': '<ruby>達成感<rt>たっせいかん</rt></ruby>',
+        '初任者': '<ruby>初任者<rt>しょにんしゃ</rt></ruby>',
+        '保育士': '<ruby>保育士<rt>ほいくし</rt></ruby>',
+        '利用者': '<ruby>利用者<rt>りようしゃ</rt></ruby>',
+        '参加者': '<ruby>参加者<rt>さんかしゃ</rt></ruby>',
+        '障害者': '<ruby>障害者<rt>しょうがいしゃ</rt></ruby>',
+        '未経験': '<ruby>未経験<rt>みけいけん</rt></ruby>',
+        
+        // 2文字熟語
         '工場': '<ruby>工場<rt>こうじょう</rt></ruby>',
         '製品': '<ruby>製品<rt>せいひん</rt></ruby>',
-        '組': '<ruby>組<rt>く</rt></ruby>',
-        '立': '<ruby>立<rt>た</rt></ruby>',
+        '部品': '<ruby>部品<rt>ぶひん</rt></ruby>',
+        '検査': '<ruby>検査<rt>けんさ</rt></ruby>',
+        '電子': '<ruby>電子<rt>でんし</rt></ruby>',
+        '食品': '<ruby>食品<rt>しょくひん</rt></ruby>',
+        '加工': '<ruby>加工<rt>かこう</rt></ruby>',
+        '業界': '<ruby>業界<rt>ぎょうかい</rt></ruby>',
+        '立川': '<ruby>立川<rt>たちかわ</rt></ruby>',
+        '周辺': '<ruby>周辺<rt>しゅうへん</rt></ruby>',
+        '中小': '<ruby>中小<rt>ちゅうしょう</rt></ruby>',
         '部品': '<ruby>部品<rt>ぶひん</rt></ruby>',
         '検査': '<ruby>検査<rt>けんさ</rt></ruby>',
         '電子': '<ruby>電子<rt>でんし</rt></ruby>',
@@ -1024,10 +1064,15 @@ function addRubyToText(text) {
     };
     
     let result = text;
-    // 既にrubyタグがある部分は置換しないように、一度に置換
-    for (const [kanji, ruby] of Object.entries(rubyMap)) {
-        // 既にrubyタグで囲まれていない漢字のみ置換
-        const regex = new RegExp(`(?<!<ruby>)${kanji}(?![^<]*<\\/rt>)`, 'g');
+    
+    // 長い単語から順に置換（部分一致を避けるため）
+    const sortedEntries = Object.entries(rubyMap).sort((a, b) => b[0].length - a[0].length);
+    
+    for (const [kanji, ruby] of sortedEntries) {
+        // エスケープ処理
+        const escapedKanji = kanji.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // 既にrubyタグ内にない漢字のみ置換
+        const regex = new RegExp(escapedKanji, 'g');
         result = result.replace(regex, ruby);
     }
     
