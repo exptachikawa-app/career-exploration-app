@@ -22,7 +22,7 @@ const appState = {
 const RIASEC_DATA = {
     R: {
         name: 'ものづくり・体を動かす',
-        description: '<ruby>手<rt>て</rt></ruby>や<ruby>体<rt>からだ</rt></ruby>を<ruby>使<rt>つか</rt></ruby>って<ruby>具体的<rt>ぐたいてき</rt></ruby>なものを<ruby>作<rt>つく</rt></ruby>ったり、<ruby>機械<rt>きかい</rt></ruby>を<ruby>操作<rt>そうさ</rt></ruby>したり、<ruby>体<rt>からだ</rt></ruby>を<ruby>動<rt>うご</rt></ruby>かす<ruby>仕事<rt>しごと</rt></ruby>が<ruby>向<rt>む</rt></ruby>いています。<ruby>製造業<rt>せいぞうぎょう</rt></ruby>、<ruby>建設業<rt>けんせつぎょう</rt></ruby>、<ruby>農業<rt>のうぎょう</rt></ruby>、<ruby>清掃業<rt>せいそうぎょう</rt></ruby>などの<ruby>分野<rt>ぶんや</rt></ruby>で<ruby>活躍<rt>かつやく</rt></ruby>できます。',
+        description: '<ruby>手<rt>て</rt></ruby>や<ruby>体<rt>からだ</rt></ruby>を<ruby>使<rt>つか</rt></ruby>って<ruby>具<rt>ぐ</rt></ruby><ruby>体<rt>たい</rt></ruby><ruby>的<rt>てき</rt></ruby>なものを<ruby>作<rt>つく</rt></ruby>ったり、<ruby>機<rt>き</rt></ruby><ruby>械<rt>かい</rt></ruby>を<ruby>操<rt>そう</rt></ruby><ruby>作<rt>さ</rt></ruby>したり、<ruby>体<rt>からだ</rt></ruby>を<ruby>動<rt>うご</rt></ruby>かす<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>が<ruby>向<rt>む</rt></ruby>いています。<ruby>製<rt>せい</rt></ruby><ruby>造<rt>ぞう</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>、<ruby>建<rt>けん</rt></ruby><ruby>設<rt>せつ</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>、<ruby>農<rt>のう</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>、<ruby>清<rt>せい</rt></ruby><ruby>掃<rt>そう</rt></ruby><ruby>業<rt>ぎょう</rt></ruby>などの<ruby>分<rt>ぶん</rt></ruby><ruby>野<rt>や</rt></ruby>で<ruby>活<rt>かつ</rt></ruby><ruby>躍<rt>やく</rt></ruby>できます。',
         phase1Questions: [
             '手を使って何かを作ったり、組み立てたりするのは好きですか？',
             '体を動かして働くことに興味がありますか？',
@@ -39,7 +39,7 @@ const RIASEC_DATA = {
     },
     I: {
         name: '調べる・考える',
-        description: '<ruby>情報<rt>じょうほう</rt></ruby>を<ruby>集<rt>あつ</rt></ruby>めて<ruby>分析<rt>ぶんせき</rt></ruby>したり、<ruby>問題<rt>もんだい</rt></ruby>を<ruby>論理的<rt>ろんりてき</rt></ruby>に<ruby>解決<rt>かいけつ</rt></ruby>したりすることが<ruby>得意<rt>とくい</rt></ruby>です。IT<ruby>業界<rt>ぎょうかい</rt></ruby>、<ruby>研究職<rt>けんきゅうしょく</rt></ruby>、データ<ruby>分析<rt>ぶんせき</rt></ruby>、<ruby>品質管理<rt>ひんしつかんり</rt></ruby>などの<ruby>分野<rt>ぶんや</rt></ruby>で<ruby>力<rt>ちから</rt></ruby>を<ruby>発揮<rt>はっき</rt></ruby>できます。',
+        description: '<ruby>情<rt>じょう</rt></ruby><ruby>報<rt>ほう</rt></ruby>を<ruby>集<rt>あつ</rt></ruby>めて<ruby>分<rt>ぶん</rt></ruby><ruby>析<rt>せき</rt></ruby>したり、<ruby>問<rt>もん</rt></ruby><ruby>題<rt>だい</rt></ruby>を<ruby>論<rt>ろん</rt></ruby><ruby>理<rt>り</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>解<rt>かい</rt></ruby><ruby>決<rt>けつ</rt></ruby>したりすることが<ruby>得<rt>とく</rt></ruby><ruby>意<rt>い</rt></ruby>です。IT<ruby>業<rt>ぎょう</rt></ruby><ruby>界<rt>かい</rt></ruby>、<ruby>研<rt>けん</rt></ruby><ruby>究<rt>きゅう</rt></ruby><ruby>職<rt>しょく</rt></ruby>、データ<ruby>分<rt>ぶん</rt></ruby><ruby>析<rt>せき</rt></ruby>、<ruby>品<rt>ひん</rt></ruby><ruby>質<rt>しつ</rt></ruby><ruby>管<rt>かん</rt></ruby><ruby>理<rt>り</rt></ruby>などの<ruby>分<rt>ぶん</rt></ruby><ruby>野<rt>や</rt></ruby>で<ruby>力<rt>ちから</rt></ruby>を<ruby>発<rt>はっ</rt></ruby><ruby>揮<rt>き</rt></ruby>できます。',
         phase1Questions: [
             '新しいことを学ぶのは楽しいですか？',
             '問題の原因を考えて解決するのは好きですか？',
@@ -56,7 +56,7 @@ const RIASEC_DATA = {
     },
     A: {
         name: 'つくる・表現する',
-        description: '<ruby>自分<rt>じぶん</rt></ruby>のアイデアを<ruby>形<rt>かたち</rt></ruby>にしたり、<ruby>芸術的<rt>げいじゅつてき</rt></ruby>な<ruby>活動<rt>かつどう</rt></ruby>をしたりすることが<ruby>得意<rt>とくい</rt></ruby>です。デザイン<ruby>業界<rt>ぎょうかい</rt></ruby>、クリエイティブ<ruby>職<rt>しょく</rt></ruby>、Web<ruby>制作<rt>せいさく</rt></ruby>、ハンドメイド<ruby>作家<rt>さっか</rt></ruby>などの<ruby>道<rt>みち</rt></ruby>があります。',
+        description: '<ruby>自<rt>じ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>のアイデアを<ruby>形<rt>かたち</rt></ruby>にしたり、<ruby>芸<rt>げい</rt></ruby><ruby>術<rt>じゅつ</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>活<rt>かつ</rt></ruby><ruby>動<rt>どう</rt></ruby>をしたりすることが<ruby>得<rt>とく</rt></ruby><ruby>意<rt>い</rt></ruby>です。デザイン<ruby>業<rt>ぎょう</rt></ruby><ruby>界<rt>かい</rt></ruby>、クリエイティブ<ruby>職<rt>しょく</rt></ruby>、Web<ruby>制<rt>せい</rt></ruby><ruby>作<rt>さく</rt></ruby>、ハンドメイド<ruby>作<rt>さっ</rt></ruby><ruby>家<rt>か</rt></ruby>などの<ruby>道<rt>みち</rt></ruby>があります。',
         phase1Questions: [
             '絵を描いたり、何かをデザインしたりするのは好きですか？',
             '自分のアイデアや感じたことを表現したいですか？',
@@ -73,7 +73,7 @@ const RIASEC_DATA = {
     },
     S: {
         name: '人を助ける・支える',
-        description: '<ruby>人<rt>ひと</rt></ruby>と<ruby>関<rt>かか</rt></ruby>わり、<ruby>困<rt>こま</rt></ruby>っている<ruby>人<rt>ひと</rt></ruby>を<ruby>助<rt>たす</rt></ruby>けたり、<ruby>支<rt>ささ</rt></ruby>えたりすることにやりがいを<ruby>感<rt>かん</rt></ruby>じます。<ruby>福祉<rt>ふくし</rt></ruby>・<ruby>介護<rt>かいご</rt></ruby>、<ruby>医療<rt>いりょう</rt></ruby>、<ruby>接客<rt>せっきゃく</rt></ruby>・サービス<ruby>業<rt>ぎょう</rt></ruby>、<ruby>教育<rt>きょういく</rt></ruby><ruby>補助<rt>ほじょ</rt></ruby>などの<ruby>分野<rt>ぶんや</rt></ruby>が<ruby>向<rt>む</rt></ruby>いています。',
+        description: '<ruby>人<rt>ひと</rt></ruby>と<ruby>関<rt>かか</rt></ruby>わり、<ruby>困<rt>こま</rt></ruby>っている<ruby>人<rt>ひと</rt></ruby>を<ruby>助<rt>たす</rt></ruby>けたり、<ruby>支<rt>ささ</rt></ruby>えたりすることにやりがいを<ruby>感<rt>かん</rt></ruby>じます。<ruby>福<rt>ふく</rt></ruby><ruby>祉<rt>し</rt></ruby>・<ruby>介<rt>かい</rt></ruby><ruby>護<rt>ご</rt></ruby>、<ruby>医<rt>い</rt></ruby><ruby>療<rt>りょう</rt></ruby>、<ruby>接<rt>せっ</rt></ruby><ruby>客<rt>きゃく</rt></ruby>・サービス<ruby>業<rt>ぎょう</rt></ruby>、<ruby>教<rt>きょう</rt></ruby><ruby>育<rt>いく</rt></ruby><ruby>補<rt>ほ</rt></ruby><ruby>助<rt>じょ</rt></ruby>などの<ruby>分<rt>ぶん</rt></ruby><ruby>野<rt>や</rt></ruby>が<ruby>向<rt>む</rt></ruby>いています。',
         phase1Questions: [
             '人と話すのは好きですか？',
             '困っている人を見ると助けたくなりますか？',
@@ -90,7 +90,7 @@ const RIASEC_DATA = {
     },
     E: {
         name: 'リーダー・企画する',
-        description: '<ruby>人<rt>ひと</rt></ruby>をまとめたり、<ruby>新<rt>あたら</rt></ruby>しいプロジェクトを<ruby>企画<rt>きかく</rt></ruby>したりすることが<ruby>得意<rt>とくい</rt></ruby>です。<ruby>営業<rt>えいぎょう</rt></ruby><ruby>職<rt>しょく</rt></ruby>、イベント<ruby>企画<rt>きかく</rt></ruby>、<ruby>店舗<rt>てんぽ</rt></ruby>マネージャー、プロジェクトリーダーなどで<ruby>活躍<rt>かつやく</rt></ruby>できます。',
+        description: '<ruby>人<rt>ひと</rt></ruby>をまとめたり、<ruby>新<rt>あたら</rt></ruby>しいプロジェクトを<ruby>企<rt>き</rt></ruby><ruby>画<rt>かく</rt></ruby>したりすることが<ruby>得<rt>とく</rt></ruby><ruby>意<rt>い</rt></ruby>です。<ruby>営<rt>えい</rt></ruby><ruby>業<rt>ぎょう</rt></ruby><ruby>職<rt>しょく</rt></ruby>、イベント<ruby>企<rt>き</rt></ruby><ruby>画<rt>かく</rt></ruby>、<ruby>店<rt>てん</rt></ruby><ruby>舗<rt>ぽ</rt></ruby>マネージャー、プロジェクトリーダーなどで<ruby>活<rt>かつ</rt></ruby><ruby>躍<rt>やく</rt></ruby>できます。',
         phase1Questions: [
             'グループで何かをする時、リーダーになることがありますか？',
             '新しいことを始めるのは好きですか？',
@@ -107,7 +107,7 @@ const RIASEC_DATA = {
     },
     C: {
         name: '正確に・きちんと進める',
-        description: '<ruby>決<rt>き</rt></ruby>められたルールや<ruby>手順<rt>てじゅん</rt></ruby>に<ruby>従<rt>したが</rt></ruby>って、<ruby>正確<rt>せいかく</rt></ruby>に<ruby>仕事<rt>しごと</rt></ruby>を<ruby>進<rt>すす</rt></ruby>めることが<ruby>得意<rt>とくい</rt></ruby>です。<ruby>事務<rt>じむ</rt></ruby><ruby>職<rt>しょく</rt></ruby>、<ruby>経理<rt>けいり</rt></ruby>、<ruby>総務<rt>そうむ</rt></ruby>、データ<ruby>入力<rt>にゅうりょく</rt></ruby>、<ruby>品質<rt>ひんしつ</rt></ruby>チェックなどの<ruby>仕事<rt>しごと</rt></ruby>が<ruby>向<rt>む</rt></ruby>いています。',
+        description: '<ruby>決<rt>き</rt></ruby>められたルールや<ruby>手<rt>て</rt></ruby><ruby>順<rt>じゅん</rt></ruby>に<ruby>従<rt>したが</rt></ruby>って、<ruby>正<rt>せい</rt></ruby><ruby>確<rt>かく</rt></ruby>に<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>を<ruby>進<rt>すす</rt></ruby>めることが<ruby>得<rt>とく</rt></ruby><ruby>意<rt>い</rt></ruby>です。<ruby>事<rt>じ</rt></ruby><ruby>務<rt>む</rt></ruby><ruby>職<rt>しょく</rt></ruby>、<ruby>経<rt>けい</rt></ruby><ruby>理<rt>り</rt></ruby>、<ruby>総<rt>そう</rt></ruby><ruby>務<rt>む</rt></ruby>、データ<ruby>入<rt>にゅう</rt></ruby><ruby>力<rt>りょく</rt></ruby>、<ruby>品<rt>ひん</rt></ruby><ruby>質<rt>しつ</rt></ruby>チェックなどの<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>が<ruby>向<rt>む</rt></ruby>いています。',
         phase1Questions: [
             'ルールや決まりを守るのは大切だと思いますか？',
             'きちんと整理整頓されていると気持ちがいいですか？',
