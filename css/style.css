@@ -405,7 +405,7 @@ rt {
     width: 100%;
     max-width: 500px;
     margin: 0 auto 40px;
-    padding: 20px;
+    padding: 30px;  /* 20px → 30px に拡大（ラベルが切れないように） */
     background: var(--white);
     border-radius: 12px;
 }

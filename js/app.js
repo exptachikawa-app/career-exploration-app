@@ -12,7 +12,8 @@ const appState = {
     phase2CurrentCategory: null,
     phase2CurrentSubQuestion: 0,
     scores: { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 },
-    history: [] // 画面遷移履歴
+    history: [], // 画面遷移履歴
+    answerHistory: [] // 各質問の回答履歴を保存（戻るボタン用）
 };
 
 // ========================================
@@ -307,7 +308,55 @@ function showScreen(screenId) {
 }
 
 function goBack() {
-    if (appState.history.length > 0) {
+    // 回答履歴がある場合は1つ前の質問に戻る
+    if (appState.answerHistory.length > 0) {
+        const lastAnswer = appState.answerHistory.pop();
+        
+        if (lastAnswer.phase === 1) {
+            // Phase1の回答を削除
+            const category = lastAnswer.category;
+            appState.phase1Answers[category].pop();
+            
+            // スコアとunsureCategoriesを再計算（カテゴリが完了していた場合）
+            const categories = Object.keys(RIASEC_DATA);
+            if (appState.phase1Answers[category].length === RIASEC_DATA[category].phase1Questions.length - 1) {
+                // このカテゴリの最後の質問に戻った場合、スコアをリセット
+                appState.scores[category] = 0;
+                
+                // unsureCategoriesから削除
+                const index = appState.unsureCategories.indexOf(category);
+                if (index > -1) {
+                    appState.unsureCategories.splice(index, 1);
+                }
+            }
+            
+            // 状態を復元
+            appState.currentPhase = 1;
+            appState.currentCategoryIndex = lastAnswer.categoryIndex;
+            appState.currentQuestionIndex = lastAnswer.questionIndex;
+            
+            showPhase1Question();
+            showScreen('screen-questions-phase1');
+        } else if (lastAnswer.phase === 2) {
+            // Phase2の回答を削除
+            const category = lastAnswer.category;
+            appState.phase2Answers[category].pop();
+            
+            // Phase1のスコアを再計算（Phase2のスコアを引く）
+            const phase1Score = appState.phase1Answers[category].filter(a => a === true).length;
+            const phase2Score = appState.phase2Answers[category].filter(a => a).length;
+            appState.scores[category] = phase1Score + phase2Score;
+            
+            // 状態を復元
+            appState.currentPhase = 2;
+            appState.phase2CurrentCategory = category;
+            appState.phase2CurrentSubQuestion = lastAnswer.subQuestionIndex;
+            
+            showPhase2Question();
+            showScreen('screen-questions-phase2');
+        }
+    } else if (appState.history.length > 0) {
+        // 回答履歴がない場合は通常の画面遷移
         const previousScreen = appState.history.pop();
         showScreen(previousScreen);
     }
@@ -338,6 +387,8 @@ function startPhase1() {
     appState.currentQuestionIndex = 0;
     appState.currentCategoryIndex = 0;
     appState.phase1Answers = {};
+    appState.answerHistory = [];  // 回答履歴をリセット
+    appState.unsureCategories = [];  // unsureCategoriesもリセット
     
     // 各カテゴリの回答配列を初期化
     Object.keys(RIASEC_DATA).forEach(cat => {
@@ -390,6 +441,15 @@ function answerPhase1(answer) {
     // 回答を記録（はい: true, いいえ: false, わからない: null）
     const answerValue = answer === 'yes' ? true : answer === 'no' ? false : null;
     appState.phase1Answers[currentCategory].push(answerValue);
+    
+    // 回答履歴に追加（戻るボタン用）
+    appState.answerHistory.push({
+        phase: 1,
+        category: currentCategory,
+        categoryIndex: appState.currentCategoryIndex,
+        questionIndex: appState.currentQuestionIndex,
+        answer: answerValue
+    });
     
     // 次の質問へ
     appState.currentQuestionIndex++;
@@ -484,7 +544,16 @@ function answerPhase2(answer) {
     const questions = questionData.phase2Questions;
     
     // 回答を記録（はい: true, いいえ: false）
-    appState.phase2Answers[currentCategory].push(answer === 'yes');
+    const answerValue = answer === 'yes';
+    appState.phase2Answers[currentCategory].push(answerValue);
+    
+    // 回答履歴に追加（戻るボタン用）
+    appState.answerHistory.push({
+        phase: 2,
+        category: currentCategory,
+        subQuestionIndex: appState.phase2CurrentSubQuestion,
+        answer: answerValue
+    });
     
     // 次のサブ質問へ
     appState.phase2CurrentSubQuestion++;
@@ -580,10 +649,18 @@ function drawRadarChart() {
                     },
                     pointLabels: {
                         font: {
-                            size: 15,
+                            size: 13,  // 15 → 13に縮小
                             weight: 'bold'
                         },
-                        padding: 10
+                        padding: 15,  // 10 → 15に拡大（ラベルとチャートの距離を広げる）
+                        callback: function(label) {
+                            // ラベルを改行して2行にする（長いラベル対策）
+                            const words = label.split('・');
+                            if (words.length > 1) {
+                                return words;  // 配列を返すと自動的に改行される
+                            }
+                            return label;
+                        }
                     },
                     grid: {
                         color: 'rgba(13, 148, 136, 0.15)'
@@ -615,7 +692,7 @@ function displayTopInterests(top3) {
             <div class="interest-card">
                 <span class="interest-rank">${rank}</span>
                 <h4 class="interest-name">${data.name}</h4>
-                <p class="interest-description">${data.description}</p>
+                <p class="interest-description">${addRubyToText(data.description)}</p>
             </div>
         `;
     });
@@ -643,12 +720,12 @@ function displayCareerRecommendations(top3) {
             html += `
                 <div class="career-card">
                     <h5 class="career-name">${career.name}</h5>
-                    <p class="career-description">${career.description}</p>
+                    <p class="career-description">${addRubyToText(career.description)}</p>
             `;
             
             // 障害者雇用を検討している場合のみ追加情報を表示
             if (appState.employmentStatus === true) {
-                html += `<p class="career-disability-note">💡 ${career.disabilityNote}</p>`;
+                html += `<p class="career-disability-note">💡 ${addRubyToText(career.disabilityNote)}</p>`;
             }
             
             html += `</div>`;
@@ -673,12 +750,297 @@ function displayCareerRecommendations(top3) {
 }
 
 // ========================================
+// ルビ追加ヘルパー関数
+// ========================================
+function addRubyToText(text) {
+    // よく使われる漢字にルビを追加
+    const rubyMap = {
+        '工場': '<ruby>工場<rt>こうじょう</rt></ruby>',
+        '製品': '<ruby>製品<rt>せいひん</rt></ruby>',
+        '組': '<ruby>組<rt>く</rt></ruby>',
+        '立': '<ruby>立<rt>た</rt></ruby>',
+        '部品': '<ruby>部品<rt>ぶひん</rt></ruby>',
+        '検査': '<ruby>検査<rt>けんさ</rt></ruby>',
+        '電子': '<ruby>電子<rt>でんし</rt></ruby>',
+        '自動車': '<ruby>自動車<rt>じどうしゃ</rt></ruby>',
+        '食品': '<ruby>食品<rt>しょくひん</rt></ruby>',
+        '加工': '<ruby>加工<rt>かこう</rt></ruby>',
+        '業界': '<ruby>業界<rt>ぎょうかい</rt></ruby>',
+        '立川': '<ruby>立川<rt>たちかわ</rt></ruby>',
+        '周辺': '<ruby>周辺<rt>しゅうへん</rt></ruby>',
+        '中小': '<ruby>中小<rt>ちゅうしょう</rt></ruby>',
+        '製造業': '<ruby>製造業<rt>せいぞうぎょう</rt></ruby>',
+        '求人': '<ruby>求人<rt>きゅうじん</rt></ruby>',
+        '豊富': '<ruby>豊富<rt>ほうふ</rt></ruby>',
+        '座': '<ruby>座<rt>すわ</rt></ruby>',
+        '作業': '<ruby>作業<rt>さぎょう</rt></ruby>',
+        '軽作業': '<ruby>軽作業<rt>けいさぎょう</rt></ruby>',
+        '手順': '<ruby>手順<rt>てじゅん</rt></ruby>',
+        '明確': '<ruby>明確<rt>めいかく</rt></ruby>',
+        '自分': '<ruby>自分<rt>じぶん</rt></ruby>',
+        '働': '<ruby>働<rt>はたら</rt></ruby>',
+        '商業': '<ruby>商業<rt>しょうぎょう</rt></ruby>',
+        '施設': '<ruby>施設<rt>しせつ</rt></ruby>',
+        '病院': '<ruby>病院<rt>びょういん</rt></ruby>',
+        '保': '<ruby>保<rt>たも</rt></ruby>',
+        '掃除機': '<ruby>掃除機<rt>そうじき</rt></ruby>',
+        '担当': '<ruby>担当<rt>たんとう</rt></ruby>',
+        '倉庫': '<ruby>倉庫<rt>そうこ</rt></ruby>',
+        '商品': '<ruby>商品<rt>しょうひん</rt></ruby>',
+        '集': '<ruby>集<rt>あつ</rt></ruby>',
+        '梱包': '<ruby>梱包<rt>こんぽう</rt></ruby>',
+        '通販': '<ruby>通販<rt>つうはん</rt></ruby>',
+        '物流': '<ruby>物流<rt>ぶつりゅう</rt></ruby>',
+        '多摩': '<ruby>多摩<rt>たま</rt></ruby>',
+        '地区': '<ruby>地区<rt>ちく</rt></ruby>',
+        '大型': '<ruby>大型<rt>おおがた</rt></ruby>',
+        '体': '<ruby>体<rt>からだ</rt></ruby>',
+        '動': '<ruby>動<rt>うご</rt></ruby>',
+        '好': '<ruby>好<rt>す</rt></ruby>',
+        '向': '<ruby>向<rt>む</rt></ruby>',
+        '畑': '<ruby>畑<rt>はたけ</rt></ruby>',
+        '野菜': '<ruby>野菜<rt>やさい</rt></ruby>',
+        '育': '<ruby>育<rt>そだ</rt></ruby>',
+        '温室': '<ruby>温室<rt>おんしつ</rt></ruby>',
+        '花': '<ruby>花<rt>はな</rt></ruby>',
+        '観葉植物': '<ruby>観葉植物<rt>かんようしょくぶつ</rt></ruby>',
+        '栽培': '<ruby>栽培<rt>さいばい</rt></ruby>',
+        '種': '<ruby>種<rt>たね</rt></ruby>',
+        '水': '<ruby>水<rt>みず</rt></ruby>',
+        '収穫': '<ruby>収穫<rt>しゅうかく</rt></ruby>',
+        '行': '<ruby>行<rt>おこな</rt></ruby>',
+        '農園': '<ruby>農園<rt>のうえん</rt></ruby>',
+        '園芸': '<ruby>園芸<rt>えんげい</rt></ruby>',
+        '自然': '<ruby>自然<rt>しぜん</rt></ruby>',
+        '中': '<ruby>中<rt>なか</rt></ruby>',
+        '季節': '<ruby>季節<rt>きせつ</rt></ruby>',
+        '変化': '<ruby>変化<rt>へんか</rt></ruby>',
+        '感': '<ruby>感<rt>かん</rt></ruby>',
+        '弁当': '<ruby>弁当<rt>べんとう</rt></ruby>',
+        '菓子': '<ruby>菓子<rt>かし</rt></ruby>',
+        '作': '<ruby>作<rt>つく</rt></ruby>',
+        '包装': '<ruby>包装<rt>ほうそう</rt></ruby>',
+        '材料': '<ruby>材料<rt>ざいりょう</rt></ruby>',
+        '計量': '<ruby>計量<rt>けいりょう</rt></ruby>',
+        '機械': '<ruby>機械<rt>きかい</rt></ruby>',
+        '操作': '<ruby>操作<rt>そうさ</rt></ruby>',
+        '清潔': '<ruby>清潔<rt>せいけつ</rt></ruby>',
+        '環境': '<ruby>環境<rt>かんきょう</rt></ruby>',
+        '使': '<ruby>使<rt>つか</rt></ruby>',
+        '顧客': '<ruby>顧客<rt>こきゃく</rt></ruby>',
+        '情報': '<ruby>情報<rt>じょうほう</rt></ruby>',
+        '入力': '<ruby>入力<rt>にゅうりょく</rt></ruby>',
+        '整理': '<ruby>整理<rt>せいり</rt></ruby>',
+        '管理': '<ruby>管理<rt>かんり</rt></ruby>',
+        '一般': '<ruby>一般<rt>いっぱん</rt></ruby>',
+        '企業': '<ruby>企業<rt>きぎょう</rt></ruby>',
+        '事務': '<ruby>事務<rt>じむ</rt></ruby>',
+        '部門': '<ruby>部門<rt>ぶもん</rt></ruby>',
+        '在宅': '<ruby>在宅<rt>ざいたく</rt></ruby>',
+        '勤務': '<ruby>勤務<rt>きんむ</rt></ruby>',
+        '増': '<ruby>増<rt>ふ</rt></ruby>',
+        '正確': '<ruby>正確<rt>せいかく</rt></ruby>',
+        '図書館': '<ruby>図書館<rt>としょかん</rt></ruby>',
+        '公民館': '<ruby>公民館<rt>こうみんかん</rt></ruby>',
+        '本': '<ruby>本<rt>ほん</rt></ruby>',
+        '貸出': '<ruby>貸出<rt>かしだし</rt></ruby>',
+        '返却': '<ruby>返却<rt>へんきゃく</rt></ruby>',
+        '本棚': '<ruby>本棚<rt>ほんだな</rt></ruby>',
+        '新刊': '<ruby>新刊<rt>しんかん</rt></ruby>',
+        '書': '<ruby>書<rt>しょ</rt></ruby>',
+        '登録': '<ruby>登録<rt>とうろく</rt></ruby>',
+        '静': '<ruby>静<rt>しず</rt></ruby>',
+        '落': '<ruby>落<rt>お</rt></ruby>',
+        '着': '<ruby>着<rt>つ</rt></ruby>',
+        '市立': '<ruby>市立<rt>しりつ</rt></ruby>',
+        '設計': '<ruby>設計<rt>せっけい</rt></ruby>',
+        '開発': '<ruby>開発<rt>かいはつ</rt></ruby>',
+        '言語': '<ruby>言語<rt>げんご</rt></ruby>',
+        '可能': '<ruby>可能<rt>かのう</rt></ruby>',
+        '学': '<ruby>学<rt>まな</rt></ruby>',
+        '大学': '<ruby>大学<rt>だいがく</rt></ruby>',
+        '研究室': '<ruby>研究室<rt>けんきゅうしつ</rt></ruby>',
+        '実験': '<ruby>実験<rt>じっけん</rt></ruby>',
+        '機器': '<ruby>機器<rt>きき</rt></ruby>',
+        '準備': '<ruby>準備<rt>じゅんび</rt></ruby>',
+        '記録': '<ruby>記録<rt>きろく</rt></ruby>',
+        '資料': '<ruby>資料<rt>しりょう</rt></ruby>',
+        '理系': '<ruby>理系<rt>りけい</rt></ruby>',
+        '知識': '<ruby>知識<rt>ちしき</rt></ruby>',
+        '活': '<ruby>活<rt>い</rt></ruby>',
+        '国立': '<ruby>国立<rt>こくりつ</rt></ruby>',
+        '極地': '<ruby>極地<rt>きょくち</rt></ruby>',
+        '研究所': '<ruby>研究所<rt>けんきゅうじょ</rt></ruby>',
+        '品質': '<ruby>品質<rt>ひんしつ</rt></ruby>',
+        '基準': '<ruby>基準<rt>きじゅん</rt></ruby>',
+        '満': '<ruby>満<rt>み</rt></ruby>',
+        '目視': '<ruby>目視<rt>もくし</rt></ruby>',
+        '測定器': '<ruby>測定器<rt>そくていき</rt></ruby>',
+        '需要': '<ruby>需要<rt>じゅよう</rt></ruby>',
+        '細': '<ruby>細<rt>こま</rt></ruby>',
+        '気': '<ruby>気<rt>き</rt></ruby>',
+        '付': '<ruby>付<rt>つ</rt></ruby>',
+        '力': '<ruby>力<rt>ちから</rt></ruby>',
+        '介護': '<ruby>介護<rt>かいご</rt></ruby>',
+        '福祉': '<ruby>福祉<rt>ふくし</rt></ruby>',
+        '特別': '<ruby>特別<rt>とくべつ</rt></ruby>',
+        '養護': '<ruby>養護<rt>ようご</rt></ruby>',
+        '老人': '<ruby>老人<rt>ろうじん</rt></ruby>',
+        '障害者': '<ruby>障害者<rt>しょうがいしゃ</rt></ruby>',
+        '支援': '<ruby>支援<rt>しえん</rt></ruby>',
+        '食事': '<ruby>食事<rt>しょくじ</rt></ruby>',
+        '介助': '<ruby>介助<rt>かいじょ</rt></ruby>',
+        '入浴': '<ruby>入浴<rt>にゅうよく</rt></ruby>',
+        '活動': '<ruby>活動<rt>かつどう</rt></ruby>',
+        '通': '<ruby>通<rt>とお</rt></ruby>',
+        '利用者': '<ruby>利用者<rt>りようしゃ</rt></ruby>',
+        '生活': '<ruby>生活<rt>せいかつ</rt></ruby>',
+        '初任者': '<ruby>初任者<rt>しょにんしゃ</rt></ruby>',
+        '研修': '<ruby>研修<rt>けんしゅう</rt></ruby>',
+        '資格': '<ruby>資格<rt>しかく</rt></ruby>',
+        '取得': '<ruby>取得<rt>しゅとく</rt></ruby>',
+        '充実': '<ruby>充実<rt>じゅうじつ</rt></ruby>',
+        '保育園': '<ruby>保育園<rt>ほいくえん</rt></ruby>',
+        '学童': '<ruby>学童<rt>がくどう</rt></ruby>',
+        '保育': '<ruby>保育<rt>ほいく</rt></ruby>',
+        '保育士': '<ruby>保育士<rt>ほいくし</rt></ruby>',
+        '子': '<ruby>子<rt>こ</rt></ruby>',
+        '遊': '<ruby>遊<rt>あそ</rt></ruby>',
+        '見守': '<ruby>見守<rt>みまも</rt></ruby>',
+        '手伝': '<ruby>手伝<rt>てつだ</rt></ruby>',
+        '掃除': '<ruby>掃除<rt>そうじ</rt></ruby>',
+        '教材': '<ruby>教材<rt>きょうざい</rt></ruby>',
+        '補助': '<ruby>補助<rt>ほじょ</rt></ruby>',
+        '接客': '<ruby>接客<rt>せっきゃく</rt></ruby>',
+        '販売': '<ruby>販売<rt>はんばい</rt></ruby>',
+        '打': '<ruby>打<rt>う</rt></ruby>',
+        '陳列': '<ruby>陳列<rt>ちんれつ</rt></ruby>',
+        '客様': '<ruby>客様<rt>きゃくさま</rt></ruby>',
+        '対応': '<ruby>対応<rt>たいおう</rt></ruby>',
+        '在庫': '<ruby>在庫<rt>ざいこ</rt></ruby>',
+        '駅': '<ruby>駅<rt>えき</rt></ruby>',
+        '小売店': '<ruby>小売店<rt>こうりてん</rt></ruby>',
+        '整': '<ruby>整<rt>ととの</rt></ruby>',
+        '制度': '<ruby>制度<rt>せいど</rt></ruby>',
+        '受付': '<ruby>受付<rt>うけつけ</rt></ruby>',
+        '会社': '<ruby>会社<rt>かいしゃ</rt></ruby>',
+        '来客': '<ruby>来客<rt>らいきゃく</rt></ruby>',
+        '電話': '<ruby>電話<rt>でんわ</rt></ruby>',
+        '簡単': '<ruby>簡単<rt>かんたん</rt></ruby>',
+        '第一印象': '<ruby>第一印象<rt>だいいちいんしょう</rt></ruby>',
+        '大切': '<ruby>大切<rt>たいせつ</rt></ruby>',
+        '問': '<ruby>問<rt>と</rt></ruby>',
+        '合': '<ruby>合<rt>あ</rt></ruby>',
+        '解決': '<ruby>解決<rt>かいけつ</rt></ruby>',
+        '策': '<ruby>策<rt>さく</rt></ruby>',
+        '提案': '<ruby>提案<rt>ていあん</rt></ruby>',
+        '営業': '<ruby>営業<rt>えいぎょう</rt></ruby>',
+        '紹介': '<ruby>紹介<rt>しょうかい</rt></ruby>',
+        '契約': '<ruby>契約<rt>けいやく</rt></ruby>',
+        '結': '<ruby>結<rt>むす</rt></ruby>',
+        '外勤': '<ruby>外勤<rt>がいきん</rt></ruby>',
+        '訪問': '<ruby>訪問<rt>ほうもん</rt></ruby>',
+        '内勤': '<ruby>内勤<rt>ないきん</rt></ruby>',
+        '展示会': '<ruby>展示会<rt>てんじかい</rt></ruby>',
+        '企画': '<ruby>企画<rt>きかく</rt></ruby>',
+        '運営': '<ruby>運営<rt>うんえい</rt></ruby>',
+        '会場': '<ruby>会場<rt>かいじょう</rt></ruby>',
+        '手配': '<ruby>手配<rt>てはい</rt></ruby>',
+        '参加者': '<ruby>参加者<rt>さんかしゃ</rt></ruby>',
+        '当日': '<ruby>当日<rt>とうじつ</rt></ruby>',
+        '進行': '<ruby>進行<rt>しんこう</rt></ruby>',
+        '裏方': '<ruby>裏方<rt>うらかた</rt></ruby>',
+        '達成感': '<ruby>達成感<rt>たっせいかん</rt></ruby>',
+        '共有': '<ruby>共有<rt>きょうゆう</rt></ruby>',
+        '店舗': '<ruby>店舗<rt>てんぽ</rt></ruby>',
+        '飲食店': '<ruby>飲食店<rt>いんしょくてん</rt></ruby>',
+        '売上': '<ruby>売上<rt>うりあげ</rt></ruby>',
+        '教育': '<ruby>教育<rt>きょういく</rt></ruby>',
+        '全体': '<ruby>全体<rt>ぜんたい</rt></ruby>',
+        '経験': '<ruby>経験<rt>けいけん</rt></ruby>',
+        '積': '<ruby>積<rt>つ</rt></ruby>',
+        '建設': '<ruby>建設<rt>けんせつ</rt></ruby>',
+        '製品開発': '<ruby>製品開発<rt>せいひんかいはつ</rt></ruby>',
+        '予算': '<ruby>予算<rt>よさん</rt></ruby>',
+        '進捗': '<ruby>進捗<rt>しんちょく</rt></ruby>',
+        '高': '<ruby>高<rt>たか</rt></ruby>',
+        '起業': '<ruby>起業<rt>きぎょう</rt></ruby>',
+        '自営業': '<ruby>自営業<rt>じえいぎょう</rt></ruby>',
+        '独立': '<ruby>独立<rt>どくりつ</rt></ruby>',
+        '移行': '<ruby>移行<rt>いこう</rt></ruby>',
+        '利用': '<ruby>利用<rt>りよう</rt></ruby>',
+        '少': '<ruby>少<rt>すこ</rt></ruby>',
+        '始': '<ruby>始<rt>はじ</rt></ruby>',
+        '書類': '<ruby>書類<rt>しょるい</rt></ruby>',
+        '未経験': '<ruby>未経験<rt>みけいけん</rt></ruby>',
+        '歓迎': '<ruby>歓迎<rt>かんげい</rt></ruby>',
+        '職場': '<ruby>職場<rt>しょくば</rt></ruby>',
+        '経理': '<ruby>経理<rt>けいり</rt></ruby>',
+        '金': '<ruby>金<rt>かね</rt></ruby>',
+        '流': '<ruby>流<rt>なが</rt></ruby>',
+        '請求書': '<ruby>請求書<rt>せいきゅうしょ</rt></ruby>',
+        '処理': '<ruby>処理<rt>しょり</rt></ruby>',
+        '領収書': '<ruby>領収書<rt>りょうしゅうしょ</rt></ruby>',
+        '発行': '<ruby>発行<rt>はっこう</rt></ruby>',
+        '出金': '<ruby>出金<rt>しゅっきん</rt></ruby>',
+        '月次': '<ruby>月次<rt>げつじ</rt></ruby>',
+        '年次': '<ruby>年次<rt>ねんじ</rt></ruby>',
+        '決算': '<ruby>決算<rt>けっさん</rt></ruby>',
+        '簿記': '<ruby>簿記<rt>ぼき</rt></ruby>',
+        '得意': '<ruby>得意<rt>とくい</rt></ruby>',
+        '総務': '<ruby>総務<rt>そうむ</rt></ruby>',
+        '業務': '<ruby>業務<rt>ぎょうむ</rt></ruby>',
+        '備品': '<ruby>備品<rt>びひん</rt></ruby>',
+        '社内': '<ruby>社内<rt>しゃない</rt></ruby>',
+        '契約書': '<ruby>契約書<rt>けいやくしょ</rt></ruby>',
+        '幅広': '<ruby>幅広<rt>はばひろ</rt></ruby>',
+        '医療': '<ruby>医療<rt>いりょう</rt></ruby>',
+        '患者': '<ruby>患者<rt>かんじゃ</rt></ruby>',
+        '予約': '<ruby>予約<rt>よやく</rt></ruby>',
+        '診察': '<ruby>診察<rt>しんさつ</rt></ruby>',
+        '券': '<ruby>券<rt>けん</rt></ruby>',
+        '保険証': '<ruby>保険証<rt>ほけんしょう</rt></ruby>',
+        '確認': '<ruby>確認<rt>かくにん</rt></ruby>',
+        '医療機関': '<ruby>医療機関<rt>いりょうきかん</rt></ruby>',
+        '丁寧': '<ruby>丁寧<rt>ていねい</rt></ruby>',
+        '重要': '<ruby>重要<rt>じゅうよう</rt></ruby>',
+        '秘書': '<ruby>秘書<rt>ひしょ</rt></ruby>',
+        '役員': '<ruby>役員<rt>やくいん</rt></ruby>',
+        '幹部': '<ruby>幹部<rt>かんぶ</rt></ruby>',
+        '調整': '<ruby>調整<rt>ちょうせい</rt></ruby>',
+        '出張': '<ruby>出張<rt>しゅっちょう</rt></ruby>',
+        '交通': '<ruby>交通<rt>こうつう</rt></ruby>',
+        '宿泊': '<ruby>宿泊<rt>しゅくはく</rt></ruby>',
+        '複数': '<ruby>複数<rt>ふくすう</rt></ruby>',
+        '同時': '<ruby>同時<rt>どうじ</rt></ruby>',
+        '仕事': '<ruby>仕事<rt>しごと</rt></ruby>',
+        '結果': '<ruby>結果<rt>けっか</rt></ruby>',
+        '興味': '<ruby>興味<rt>きょうみ</rt></ruby>',
+        '関心': '<ruby>関心<rt>かんしん</rt></ruby>',
+        '決': '<ruby>決<rt>き</rt></ruby>',
+        '実際': '<ruby>実際<rt>じっさい</rt></ruby>',
+        '新': '<ruby>新<rt>あたら</rt></ruby>',
+        '発見': '<ruby>発見<rt>はっけん</rt></ruby>'
+    };
+    
+    let result = text;
+    // 既にrubyタグがある部分は置換しないように、一度に置換
+    for (const [kanji, ruby] of Object.entries(rubyMap)) {
+        // 既にrubyタグで囲まれていない漢字のみ置換
+        const regex = new RegExp(`(?<!<ruby>)${kanji}(?![^<]*<\\/rt>)`, 'g');
+        result = result.replace(regex, ruby);
+    }
+    
+    return result;
+}
+
+// ========================================
 // 支援者向け情報の準備
 // ========================================
 function prepareSupporterInfo(top3) {
     // 回答の詳細
     let answerDetailsHTML = '<div style="font-size: 14px; line-height: 1.8;">';
-    answerDetailsHTML += '<p style="margin-bottom: 15px;"><strong>■ Phase1（基本質問）の回答</strong></p>';
+    answerDetailsHTML += '<p style="margin-bottom: 15px;"><strong>■ Phase1（<ruby>基本<rt>きほん</rt></ruby><ruby>質問<rt>しつもん</rt></ruby>）の<ruby>回答<rt>かいとう</rt></ruby></strong></p>';
     
     const categories = Object.keys(RIASEC_DATA);
     categories.forEach(category => {
@@ -691,16 +1053,16 @@ function prepareSupporterInfo(top3) {
         
         answerDetailsHTML += `<p style="margin: 8px 0; padding: 8px; background: #f8fafc; border-radius: 6px;">`;
         answerDetailsHTML += `<strong>${data.name}</strong>: `;
-        answerDetailsHTML += `<span style="color: #10B981;">はい ${yesCount}問</span> / `;
-        answerDetailsHTML += `<span style="color: #6B7280;">いいえ ${noCount}問</span> / `;
-        answerDetailsHTML += `<span style="color: #F59E0B;">わからない ${unsureCount}問</span>`;
-        answerDetailsHTML += ` （全${totalQuestions}問中）`;
+        answerDetailsHTML += `<span style="color: #10B981;">はい ${yesCount}<ruby>問<rt>もん</rt></ruby></span> / `;
+        answerDetailsHTML += `<span style="color: #6B7280;">いいえ ${noCount}<ruby>問<rt>もん</rt></ruby></span> / `;
+        answerDetailsHTML += `<span style="color: #F59E0B;">わからない ${unsureCount}<ruby>問<rt>もん</rt></ruby></span>`;
+        answerDetailsHTML += ` （<ruby>全<rt>ぜん</rt></ruby>${totalQuestions}<ruby>問中<rt>もんちゅう</rt></ruby>）`;
         answerDetailsHTML += `</p>`;
     });
     
     if (appState.unsureCategories.length > 0) {
-        answerDetailsHTML += '<p style="margin-top: 20px; margin-bottom: 15px;"><strong>■ Phase2（詳細質問）の回答</strong></p>';
-        answerDetailsHTML += '<p style="font-size: 13px; color: #6B7280; margin-bottom: 10px;">※「わからない」が2問以上あったカテゴリのみ実施</p>';
+        answerDetailsHTML += '<p style="margin-top: 20px; margin-bottom: 15px;"><strong>■ Phase2（<ruby>詳細<rt>しょうさい</rt></ruby><ruby>質問<rt>しつもん</rt></ruby>）の<ruby>回答<rt>かいとう</rt></ruby></strong></p>';
+        answerDetailsHTML += '<p style="font-size: 13px; color: #6B7280; margin-bottom: 10px;">※「わからない」が2<ruby>問<rt>もん</rt></ruby><ruby>以上<rt>いじょう</rt></ruby>あったカテゴリのみ<ruby>実施<rt>じっし</rt></ruby></p>';
         
         appState.unsureCategories.forEach(category => {
             const data = RIASEC_DATA[category];
@@ -710,15 +1072,15 @@ function prepareSupporterInfo(top3) {
             
             answerDetailsHTML += `<p style="margin: 8px 0; padding: 8px; background: #fffbeb; border-radius: 6px;">`;
             answerDetailsHTML += `<strong>${data.name}</strong>: `;
-            answerDetailsHTML += `<span style="color: #10B981;">はい ${yesCount}問</span> / `;
-            answerDetailsHTML += `<span style="color: #6B7280;">いいえ ${totalQuestions - yesCount}問</span>`;
-            answerDetailsHTML += ` （全${totalQuestions}問中）`;
+            answerDetailsHTML += `<span style="color: #10B981;">はい ${yesCount}<ruby>問<rt>もん</rt></ruby></span> / `;
+            answerDetailsHTML += `<span style="color: #6B7280;">いいえ ${totalQuestions - yesCount}<ruby>問<rt>もん</rt></ruby></span>`;
+            answerDetailsHTML += ` （<ruby>全<rt>ぜん</rt></ruby>${totalQuestions}<ruby>問中<rt>もんちゅう</rt></ruby>）`;
             answerDetailsHTML += `</p>`;
         });
     }
     
     answerDetailsHTML += '<p style="margin-top: 15px; font-size: 13px; color: #6B7280; padding: 10px; background: #f0f9ff; border-radius: 6px;">';
-    answerDetailsHTML += '📊 <strong>スコア計算方法</strong>: Phase1とPhase2の「はい」の数を合計（最大4点/カテゴリ）';
+    answerDetailsHTML += '📊 <strong>スコア<ruby>計算<rt>けいさん</rt></ruby><ruby>方法<rt>ほうほう</rt></ruby></strong>: Phase1とPhase2の「はい」の<ruby>数<rt>かず</rt></ruby>を<ruby>合計<rt>ごうけい</rt></ruby>（<ruby>最大<rt>さいだい</rt></ruby>4<ruby>点<rt>てん</rt></ruby>/カテゴリ）';
     answerDetailsHTML += '</p>';
     
     answerDetailsHTML += '</div>';
@@ -731,11 +1093,11 @@ function prepareSupporterInfo(top3) {
     top3.forEach((item, index) => {
         const [category, score] = item;
         const data = RIASEC_DATA[category];
-        const rank = ['1位', '2位', '3位'][index];
+        const rank = ['1<ruby>位<rt>い</rt></ruby>', '2<ruby>位<rt>い</rt></ruby>', '3<ruby>位<rt>い</rt></ruby>'][index];
         
         const hints = getSupportHints(category);
         hintsHTML += `<li style="margin-bottom: 18px; padding: 12px; background: #f8fafc; border-radius: 8px; border-left: 4px solid #0D9488;">`;
-        hintsHTML += `<strong style="color: #0D9488; font-size: 15px;">${rank}: ${data.name} (${score}点)</strong><br>`;
+        hintsHTML += `<strong style="color: #0D9488; font-size: 15px;">${rank}: ${data.name} (${score}<ruby>点<rt>てん</rt></ruby>)</strong><br>`;
         hintsHTML += `<span style="margin-top: 8px; display: block; line-height: 1.8;">${hints}</span>`;
         hintsHTML += `</li>`;
     });
@@ -745,12 +1107,12 @@ function prepareSupporterInfo(top3) {
 
 function getSupportHints(category) {
     const hints = {
-        R: '体験活動や実習を通じて、具体的な作業に触れる機会を作りましょう。製造業や清掃業の職場見学が効果的です。',
-        I: 'じっくり考える時間を確保し、興味のあるテーマについて調べる活動を促しましょう。図書館やPC作業の体験が有効です。',
-        A: '創作活動の機会を増やし、自己表現を尊重しましょう。デザインやハンドメイド作品の制作体験を検討してください。',
-        S: '人との関わりを大切にし、ボランティア活動や接客体験を提案しましょう。コミュニケーションスキルの向上支援も重要です。',
-        E: 'リーダーシップを発揮できる場面を作り、企画や運営に関わる経験を提供しましょう。小規模なプロジェクトから始めると良いでしょう。',
-        C: '手順やルールを明確にした作業環境を整え、正確さを活かせる業務（事務、データ入力など）の体験を推奨します。'
+        R: addRubyToText('体験活動や実習を通じて、具体的な作業に触れる機会を作りましょう。製造業や清掃業の職場見学が効果的です。'),
+        I: addRubyToText('じっくり考える時間を確保し、興味のあるテーマについて調べる活動を促しましょう。図書館やPC作業の体験が有効です。'),
+        A: addRubyToText('創作活動の機会を増やし、自己表現を尊重しましょう。デザインやハンドメイド作品の制作体験を検討してください。'),
+        S: addRubyToText('人との関わりを大切にし、ボランティア活動や接客体験を提案しましょう。コミュニケーションスキルの向上支援も重要です。'),
+        E: addRubyToText('リーダーシップを発揮できる場面を作り、企画や運営に関わる経験を提供しましょう。小規模なプロジェクトから始めると良いでしょう。'),
+        C: addRubyToText('手順やルールを明確にした作業環境を整え、正確さを活かせる業務（事務、データ入力など）の体験を推奨します。')
     };
     return hints[category] || '';
 }
@@ -825,17 +1187,17 @@ async function downloadPDF() {
             // ページコンテナを作成（A4サイズに最適化）
             const pageContainer = document.createElement('div');
             pageContainer.style.backgroundColor = '#ffffff';
-            pageContainer.style.padding = '30px';
+            pageContainer.style.padding = '25px';  // 30px → 25px に縮小
             pageContainer.style.width = '210mm';  // A4幅
             pageContainer.style.minHeight = '297mm';  // A4高さ
             pageContainer.style.boxSizing = 'border-box';
-            pageContainer.style.fontSize = '14px';
+            pageContainer.style.fontSize = '13px';  // 14px → 13px に縮小
             
             // 各要素をクローンして追加
             validElements.forEach((el, index) => {
                 const clone = el.cloneNode(true);
                 
-                // Chart.jsのCanvasを画像に変換
+                // Chart.jsのCanvasを画像に変換（PDF用にサイズ縮小）
                 const chartCanvas = clone.querySelector('#radarChart');
                 if (chartCanvas) {
                     const originalChart = document.getElementById('radarChart');
@@ -843,9 +1205,9 @@ async function downloadPDF() {
                     const img = document.createElement('img');
                     img.src = chartImage;
                     img.style.width = '100%';
-                    img.style.maxWidth = '400px';
+                    img.style.maxWidth = '320px';  // 400px → 320px に縮小
                     img.style.display = 'block';
-                    img.style.margin = '20px auto';
+                    img.style.margin = '15px auto';  // 余白も縮小
                     chartCanvas.parentNode.replaceChild(img, chartCanvas);
                 }
                 
@@ -855,7 +1217,7 @@ async function downloadPDF() {
                 // スタイル調整
                 clone.style.marginBottom = index < validElements.length - 1 ? '20px' : '0';
                 
-                // すべてのテキストを濃くする
+                // すべてのテキストを濃くし、フォントサイズを調整
                 clone.querySelectorAll('*').forEach(elem => {
                     const computedStyle = window.getComputedStyle(elem);
                     const currentColor = computedStyle.color;
@@ -868,12 +1230,14 @@ async function downloadPDF() {
                         elem.style.setProperty('color', '#0F172A', 'important');
                     }
                     
-                    // フォントサイズ調整
+                    // フォントサイズ調整（PDF用に縮小）
                     const fontSize = parseInt(computedStyle.fontSize);
                     if (fontSize > 24) {
-                        elem.style.fontSize = '22px';
+                        elem.style.fontSize = '20px';  // 22px → 20px
                     } else if (fontSize > 18) {
-                        elem.style.fontSize = '16px';
+                        elem.style.fontSize = '15px';  // 16px → 15px
+                    } else if (fontSize > 14) {
+                        elem.style.fontSize = '13px';  // 新規追加
                     }
                 });
                 
